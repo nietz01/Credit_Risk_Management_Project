@@ -14,6 +14,7 @@ def dropColumnsWithNAs(data, thresh):
 
     return data
 
+# function is not used
 def convertCategoricalData(data):
 
     cat_columns = data.select_dtypes(['category']).columns
@@ -25,8 +26,6 @@ def convertCategoricalData(data):
 
 
 def dropRowsWithNAs(data):
-
-    print(data.isna().sum())
 
     rowwiseIsNA = np.vectorize(pd.isna)
     rowwiseNA = rowwiseIsNA(data)
