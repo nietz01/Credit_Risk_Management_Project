@@ -1,5 +1,8 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sb
+
 
 def calculate_woe_iv(data, target, bins):
 
@@ -31,7 +34,7 @@ def calculate_woe_iv(data, target, bins):
 
     return newDF, woeDF
 
-def dropColumnsLowIV(data_preprocessed, df_iv, thresh):
+def dropFeaturesLowIV(data_preprocessed, df_iv, thresh):
 
     columnsLowIV = df_iv[df_iv['IV'] < thresh]['Variable'].tolist()
     data = data_preprocessed.drop(columnsLowIV, axis=1)
@@ -73,6 +76,22 @@ def replaceCategoricalValues(features, df_woe):
 
     features = features.apply(pd.to_numeric)
     return features
+
+def showHeatMap(data_preprocessed):
+
+    plt.figure(figsize=(16, 16))
+    sb.heatmap(data_preprocessed.corr(), annot=True, cmap=plt.cm.Reds)
+    plt.show()
+
+def dropFeaturesHighlyCorr(data_preprocessed, thresh):
+
+    corr_matrix = data_preprocessed.corr().abs()
+    upper_tri = corr_matrix.where(np.triu(np.ones(corr_matrix.shape),k=1).astype(np.bool))
+    to_drop = [column for column in upper_tri.columns if any(upper_tri[column] > thresh)]
+    print(to_drop)
+    data_preprocessed = data_preprocessed.drop(to_drop, axis=1)
+
+    return data_preprocessed
 
 
 
