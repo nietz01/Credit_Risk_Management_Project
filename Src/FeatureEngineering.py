@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sb
-
+from sklearn.feature_selection import SequentialFeatureSelector
+from sklearn.linear_model import LogisticRegression
 
 def calculate_woe_iv(data, target, bins):
 
@@ -37,6 +38,7 @@ def calculate_woe_iv(data, target, bins):
 def dropFeaturesLowIV(data_preprocessed, df_iv, thresh):
 
     columnsLowIV = df_iv[df_iv['IV'] < thresh]['Variable'].tolist()
+    print(columnsLowIV)
     data = data_preprocessed.drop(columnsLowIV, axis=1)
 
     return data
@@ -92,6 +94,25 @@ def dropFeaturesHighlyCorr(data_preprocessed, thresh):
     data_preprocessed = data_preprocessed.drop(to_drop, axis=1)
 
     return data_preprocessed
+
+def forwardFeatureSelection(X, y, thresh):
+
+    logit = LogisticRegression()
+    sfs = SequentialFeatureSelector(logit, n_features_to_select=thresh)
+    sfs.fit(X, y)
+
+    X_new = sfs.transform(X)
+    retained_feat = sfs.get_feature_names_out()
+    X_new_df = pd.DataFrame(X_new, columns=retained_feat)
+
+    to_drop = X.drop(retained_feat, axis=1)
+    print(list(to_drop.columns))
+
+    return X_new_df
+
+
+
+
 
 
 
